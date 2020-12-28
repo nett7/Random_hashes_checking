@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <fstream>
 #include <utility>
+#include <cstring>
 
 using namespace std;
 
@@ -30,7 +31,7 @@ public:
 private:
     const string LETTERS = "asdfghjkl:;zxcv";
     const size_t COUNT_OF_HASHES = 100;
-    const size_t PASSWORDS_LEN = 8;
+    const size_t PASSWORDS_LEN = 11;
     const string path;
 
     vector<string> answers;
@@ -43,13 +44,13 @@ string sha256(const string str);
 void Work::generate_hashes() {
 
     std::random_device dev;
-    std::mt19937 rng(1);
+    std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, LETTERS.size() - 1);
 
     stringstream stream;
     for (int i = 0; i < COUNT_OF_HASHES; i++) {
         string current_word;
-        current_word.reserve(8);
+        current_word.reserve(PASSWORDS_LEN);
         for (int j = 0; j < PASSWORDS_LEN; j++) {
             current_word += LETTERS[dist(rng)];
         }
@@ -131,11 +132,12 @@ int main(int argc, char *argv[]) {
         w.generate_hashes();
 
         ofstream file1, file2;
-        file1.open(path +"/hashes.txt");
-        file2.open(path +"/generated_passwords.txt");
+        file1.open(path +"out/hashes.txt");
+        file2.open(path +"out/generated_passwords.txt");
         w.print_generated_hashes(file1);
         w.print_generated_passwords(file2);
 
+	cout<<"Hashes written sussefuly\n";
         file1.close();
         file2.close();
 
