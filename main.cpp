@@ -8,8 +8,10 @@
 #include <fstream>
 #include <utility>
 #include <cstring>
+#include <filesystem>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 class Work {
 public:
@@ -60,7 +62,7 @@ void Work::generate_hashes() {
 
 void Work::read_answers() {
     ifstream file;
-    file.open(path+"/answers.txt");
+    file.open(path + "/answers.txt");
     if (file.is_open()) {
         for (auto &i: answers) {
             std::getline(file, i);
@@ -73,7 +75,7 @@ pair<int, int> Work::checking_answers() {
     int right_count = 0;
     int k = 0;
     for (const auto &gener_answer : generated_passwords_hashes) {
-        cout << answers[k] <<" "<<gener_answer.first<<endl;
+        cout << answers[k] << " " << gener_answer.first << endl;
         if (gener_answer.first == answers[k++]) {
             right_count++;
         }
@@ -94,11 +96,11 @@ void Work::print_generated_passwords(ostream &stream) {
 }
 
 void Work::read_hashes_passwords() {
-ifstream file1, file2;
-    file2.open(path +"/hashes.txt");
-    file1.open(path +"/generated_passwords.txt");
+    ifstream file1, file2;
+    file2.open(path + "output/hashes.txt");
+    file1.open(path + "output/generated_passwords.txt");
     string s1, s2;
-    while (file1>>s1 && file2>>s2){
+    while (file1 >> s1 && file2 >> s2) {
         generated_passwords_hashes[move(s1)] = move(s2);
     }
     file1.close();
@@ -122,27 +124,28 @@ string sha256(const string str) {
 int main(int argc, char *argv[]) {
 
     if (argc < 2) {
-        std::cerr << "Usage:\n" << argv[0] <<" + \n"
-                  "1: -g: to generate hashes and save it to file hashes.txt\n"
-                  "2: -c + $pwd: to check founded passwords with generated\n " << std::endl;
+        std::cerr << "Usage:\n" << argv[0] << " + \n"
+                                              "1: -g: to generate hashes and save it to file hashes.txt\n"
+                                              "2: -c + $pwd: to check founded passwords with generated\n " << std::endl;
         return 1;
-    } else if (argc == 3 && strcmp(argv[1],"-g") == 0) {
+    } else if (argc == 3 && strcmp(argv[1], "-g") == 0) {
         string path = argv[2];
         Work w(path);
         w.generate_hashes();
 
         ofstream file1, file2;
-        file1.open(path +"out/hashes.txt");
-        file2.open(path +"out/generated_passwords.txt");
+        fs::create_directory(path+"/output");
+        file1.open(path + "output/hashes.txt");
+        file2.open(path + "output/generated_passwords.txt");
         w.print_generated_hashes(file1);
         w.print_generated_passwords(file2);
 
-	cout<<"Hashes written sussefuly\n";
+        cout << "Hashes and passwords written successfully\n";
         file1.close();
         file2.close();
 
         return 0;
-    } else if (argc == 3 && strcmp(argv[1],"-c") == 0) {
+    } else if (argc == 3 && strcmp(argv[1], "-c") == 0) {
         string path = argv[2];
 
         Work w(path);
@@ -150,6 +153,6 @@ int main(int argc, char *argv[]) {
         w.read_answers();
         cout << w.checking_answers().first << " passwords decrypted\n";
     } else {
-        cerr<<"Wrong usage\n"<<argc;
+        cerr << "Wrong usage\n" << argc;
     }
 }
