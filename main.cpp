@@ -97,8 +97,8 @@ void Work::print_generated_passwords(ostream &stream) {
 
 void Work::read_hashes_passwords() {
     ifstream file1, file2;
-    file2.open(path + "output/hashes.txt");
-    file1.open(path + "output/generated_passwords.txt");
+    file2.open(path + "/output/hashes.txt");
+    file1.open(path + "/output/generated_passwords.txt");
     string s1, s2;
     while (file1 >> s1 && file2 >> s2) {
         generated_passwords_hashes[move(s1)] = move(s2);
@@ -135,8 +135,8 @@ int main(int argc, char *argv[]) {
 
         ofstream file1, file2;
         fs::create_directory(path+"/output");
-        file1.open(path + "output/hashes.txt");
-        file2.open(path + "output/generated_passwords.txt");
+        file1.open(path + "/output/hashes.txt");
+        file2.open(path + "/output/generated_passwords.txt");
         w.print_generated_hashes(file1);
         w.print_generated_passwords(file2);
 
